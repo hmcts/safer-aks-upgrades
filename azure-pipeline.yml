@@ -85,7 +85,6 @@ stages:
               - powershell: |
                   $plutoOutput = Get-Content "/home/vsts/outputfile.txt"
                   Write-Host "##vso[task.setvariable variable=testvar;]$plutoOutput"
-                  name: plutoOutput
                   displayName: Read pluto outputs
 
               - task: GitHubComment@0

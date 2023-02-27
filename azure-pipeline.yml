@@ -87,10 +87,10 @@ stages:
                   scriptPath: 'scripts/run_pluto.sh'
                   arguments: '${{ deployment.aks.subscription }} ${{ deployment.aks.resource_group }} ${{ deployment.aks.name }} ${{ deployment.environment }} ${{ deployment.department }}'
 
-              - pwsh: |
-                  Get-ChildItem $(System.DefaultWorkingDirectory) -Recurse
-                name: DebugCheckout
-                displayName: Debug script checkout
+#              - pwsh: |
+#                  Get-ChildItem $(System.DefaultWorkingDirectory) -Recurse
+#                name: DebugCheckout
+#                displayName: Debug script checkout
 #
               - bash: |
                   source scripts/run_pluto.sh
@@ -101,4 +101,5 @@ stages:
                 inputs:
                   gitHubConnection: 'GitHub Management'
                   repositoryName: 'safer-aks-upgrades'
-                  comment: 'myComment'
+                  id:
+                  comment: $(myComment)

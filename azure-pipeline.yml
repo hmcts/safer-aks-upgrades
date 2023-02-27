@@ -41,8 +41,8 @@ stages:
       - stage: ${{ deployment.deployment }}
         dependsOn: ${{ deployment.dependsOn }}
         jobs:
-          - job: ${{ deployment.environment }}_generate_yaml
-            displayName: ${{ deployment.environment }} - generate yaml
+          - job: ${{ deployment.environment }}
+            displayName: ${{ deployment.environment }}
             pool:
               vmImage: ${{ variables.agentPool }}
             timeoutInMinutes: ${{ variables.timeoutInMinutes }}

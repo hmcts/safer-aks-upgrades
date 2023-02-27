@@ -99,7 +99,7 @@ stages:
 
               - task: GitHubComment@0
                 inputs:
-                  gitHubConnection: 'GitHub Management'
+                  gitHubConnection: 'GitHub Management - Full Repo Access
                   repositoryName: 'safer-aks-upgrades'
                   id: '$(System.PullRequest.PullRequestNumber)'
                   comment: |

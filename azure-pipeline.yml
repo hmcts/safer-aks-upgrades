@@ -94,11 +94,12 @@ stages:
 #
               - bash: |
                   source '$(System.DefaultWorkingDirectory)/scripts/run_pluto.sh'
-#                  formatted_output=${output//\\n/%0D%0A}
+                  formatted_output=${output//\\n/%0D%0A}
                   echo "##vso[task.setvariable variable=myComment]$formatted_output"
 
               - task: GitHubComment@0
                 inputs:
                   gitHubConnection: 'GitHub Management'
                   repositoryName: 'safer-aks-upgrades'
+                  id: '$(System.PullRequest.PullRequestNumber)'
                   comment: $(myComment)

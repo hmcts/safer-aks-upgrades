@@ -29,15 +29,15 @@ parameters:
           resource_group: cft-sbox-00-rg
           name: cft-sbox-00-aks
 
-      - deployment:
-        environment: demo
-        component: dt-availability-dashboards-yaml
-        service_connection: dcd-cftapps-demo
-        department: cft
-        aks:
-          subscription: DCD-CFTAPPS-DEMO
-          resource_group: cft-demo-00-rg
-          name: cft-demo-00-aks
+#      - deployment:
+#        environment: demo
+#        component: dt-availability-dashboards-yaml
+#        service_connection: dcd-cftapps-demo
+#        department: cft
+#        aks:
+#          subscription: DCD-CFTAPPS-DEMO
+#          resource_group: cft-demo-00-rg
+#          name: cft-demo-00-aks
 
 variables:
   - name: timeoutInMinutes
@@ -87,18 +87,21 @@ stages:
                   scriptPath: 'scripts/run_pluto.sh'
                   arguments: '${{ deployment.aks.subscription }} ${{ deployment.aks.resource_group }} ${{ deployment.aks.name }} ${{ deployment.environment }} ${{ deployment.department }}'
 
-              - pwsh: |
-                  Get-ChildItem $(System.DefaultWorkingDirectory) -Recurse
-                name: DebugCheckout
-                displayName: Debug script checkout
+#              - pwsh: |
+#                  Get-ChildItem $(System.DefaultWorkingDirectory) -Recurse
+#                name: DebugCheckout
+#                displayName: Debug script checkout
 #
               - bash: |
-                  source scripts/run_pluto.sh
+                  source '$(System.DefaultWorkingDirectory)/scripts/run_pluto.sh'
                   formatted_output=${output//\\n/%0D%0A}
-                  echo "##vso[task.setvariable variable=myComment]$formatted_output"
+                  echo "##vso[task.setvariable variable=myComment;]$formatted_output"
+                  echo "verbose logs $formatted_output"
 
-              - task: GitHubComment@0
-                inputs:
-                  gitHubConnection: 'GitHub Management'
-                  repositoryName: 'safer-aks-upgrades'
-                  comment: 'myComment'
+#              - task: GitHubComment@0
+#                inputs:
+#                  gitHubConnection: 'GitHub Management - Full Repo Access'
+#                  repositoryName: 'safer-aks-upgrades'
+#                  id: '$(System.PullRequest.PullRequestNumber)'
+#                  comment: |
+#                    The following table shows the results of the pluto command

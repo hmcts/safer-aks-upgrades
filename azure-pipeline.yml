@@ -29,6 +29,16 @@ parameters:
           resource_group: cft-sbox-00-rg
           name: cft-sbox-00-aks
 
+      - deployment:
+        environment: demo
+        component: dt-availability-dashboards-yaml
+        service_connection: dcd-cftapps-demo
+        department: cft
+        aks:
+          subscription: DCD-CFTAPPS-DEMO
+          resource_group: cft-demo-00-rg
+          name: cft-demo-00-aks
+
 variables:
   - name: timeoutInMinutes
     value: 60
@@ -77,18 +87,18 @@ stages:
                   scriptPath: 'scripts/run_pluto.sh'
                   arguments: '${{ deployment.aks.subscription }} ${{ deployment.aks.resource_group }} ${{ deployment.aks.name }} ${{ deployment.environment }} ${{ deployment.department }}'
 
-              - pwsh: |
-                  Get-ChildItem $(System.DefaultWorkingDirectory) -Recurse
-                name: DebugCheckout
-                displayName: Debug script checkout
-
-              - powershell: |
-                  $plutoOutput = Get-Content "/home/vsts/outputfile.txt"
-                  Write-Host "##vso[task.setvariable variable=testvar;]$plutoOutput"
-                  displayName: Read pluto outputs
-
-              - task: GitHubComment@0
-                inputs:
-                  gitHubConnection: 'hmcts (1)'
-                  repositoryName: 'safer-aks-upgrades'
-                  comment: '$(testvar)'
+#              - pwsh: |
+#                  Get-ChildItem $(System.DefaultWorkingDirectory) -Recurse
+#                name: DebugCheckout
+#                displayName: Debug script checkout
+#
+#              - bash: |
+#                  source scripts/my-script
+#                  formatted_output=${output//\\n/%0D%0A}
+#                  echo "##vso[task.setvariable variable=myComment]$formatted_output"
+#
+#              - task: GitHubComment@0
+#                inputs:
+#                  gitHubConnection: 'hmcts (1)'
+#                  repositoryName: 'safer-aks-upgrades'
+#                  comment: '$(testvar)'

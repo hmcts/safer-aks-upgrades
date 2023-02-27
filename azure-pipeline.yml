@@ -1,0 +1,65 @@
+trigger:
+  - main
+
+
+parameters:
+  - name: kvConnectedServiceName
+    default: 'azurerm-sandbox'
+  - name: environment_components
+    type: object
+    default:
+      - service_connection: aks-test
+        department: cft
+        aks:
+          subscription: Pay-As-You-Go
+          resource_group: rg-mycluster
+          name: mycluster
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+resources:
+  repositories: #check out those repositories that you want to scan with Pluto
+    - repository: MyGitHubRepo
+      type: github
+      endpoint: taherkhan30
+      name: taherkhan30/deprecation-test
+      ref: master
+
+steps:
+  - checkout: self
+    submodules: true
+    persistCredentials: true
+
+  - checkout: MyGitHubRepo
+    submodules: true
+    persistCredentials: true
+
+  - pwsh: |
+      Get-ChildItem $(System.DefaultWorkingDirectory) -Recurse
+    name: DebugCheckout
+    displayName: Debug script checkout
+
+  - task: CmdLine@2
+    displayName: 'Install Pluto' # update Pluto version if needed in wget and tar command
+    inputs:
+      script: |
+        sudo apt-get update
+        echo Downloading Pluto...
+        wget github.com/FairwindsOps/pluto/releases/download/v5.10.1/pluto_5.10.1_linux_amd64.tar.gz
+        tar xzvf pluto_5.10.1_linux_amd64.tar.gz
+        echo Pluto downloaded successfully!      
+
+  # - task: Bash@3
+  #   displayName: 'Run Kubernetes API deprecations validation with Pluto'
+  #   inputs:
+  #     filePath:  '$(System.DefaultWorkingDirectory)/api-deprecation/scan-api-depracations.sh'
+  #     arguments: '$(System.DefaultWorkingDirectory)' # This argument lets the script know the location for checked out repos
+
+  - task: AzureCLI@2
+    displayName: 'run pluto commands on AKS Cluster'
+    inputs:
+      azureSubscription: 'aks-test'
+      scriptType: 'bash'
+      scriptPath: '$(System.DefaultWorkingDirectory)/api-deprecation/aks.sh'
+      # arguments: '${{ parameters.environment_components.aks.subscription }} ${{ parameters.environment_components.aks.resource_group }} ${{ parameters.environment_components.aks.name }} ${{ parameters.environment_components.department }}'

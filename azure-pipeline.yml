@@ -85,6 +85,6 @@ stages:
 
               - task: GitHubComment@0
                 inputs:
-                  gitHubConnection: 'post-pr-comment'
-                  repositoryName: ${{ deployment.service_connection }}
+                  gitHubConnection: 'hmcts (1)'
+                  repositoryName: 'safer-aks-upgrades'
                   comment: '$(testvar)'

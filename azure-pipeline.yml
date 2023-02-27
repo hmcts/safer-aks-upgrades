@@ -96,11 +96,12 @@ stages:
                   source '$(System.DefaultWorkingDirectory)/scripts/run_pluto.sh'
                   formatted_output=${output//\\n/%0D%0A}
                   echo "##vso[task.setvariable variable=myComment;]$formatted_output"
+                  echo "verbose logs $formatted_output"
 
-              - task: GitHubComment@0
-                inputs:
-                  gitHubConnection: 'GitHub Management - Full Repo Access'
-                  repositoryName: 'safer-aks-upgrades'
-                  id: '$(System.PullRequest.PullRequestNumber)'
-                  comment: |
-                    The following table shows the results of the pluto command
+#              - task: GitHubComment@0
+#                inputs:
+#                  gitHubConnection: 'GitHub Management - Full Repo Access'
+#                  repositoryName: 'safer-aks-upgrades'
+#                  id: '$(System.PullRequest.PullRequestNumber)'
+#                  comment: |
+#                    The following table shows the results of the pluto command

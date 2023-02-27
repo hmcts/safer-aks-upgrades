@@ -15,7 +15,7 @@ az aks get-credentials \
     --name $aks_name --admin
 ./pluto
 ./pluto detect-helm -o wide
-output="# Changes\n\nThe following packages were updated:\n"
+output="test"
 
 export output
 

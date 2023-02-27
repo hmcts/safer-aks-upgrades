@@ -82,11 +82,11 @@ stages:
                 name: DebugCheckout
                 displayName: Debug script checkout
 
-#              - powershell: |
-#                  $plutoOutput = Get-Content "$(System.DefaultWorkingDirectory)/outputfile.txt"
-#                  Write-Host "##vso[task.setvariable variable=testvar;]$plutoOutput"
-#                  name: plutoOutput
-#                  displayName: Read pluto outputs
+              - powershell: |
+                  $plutoOutput = Get-Content "/home/vsts/outputfile.txt"
+                  Write-Host "##vso[task.setvariable variable=testvar;]$plutoOutput"
+                  name: plutoOutput
+                  displayName: Read pluto outputs
 
               - task: GitHubComment@0
                 inputs:

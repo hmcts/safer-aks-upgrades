@@ -100,5 +100,5 @@ stages:
               - task: GitHubComment@0
                 inputs:
                   gitHubConnection: 'GitHub Management'
-                  repositoryName: '$(Build.Repository.Name)'
+                  repositoryName: 'safer-aks-upgrades'
                   comment: $(myComment)

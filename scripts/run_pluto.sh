@@ -2,10 +2,12 @@
 
 #! /usr/bin/env bash
 set -x
-az account set --subscription 'Pay-As-You-Go'
-aks_resource_group='rg-mycluster'
-aks_name='mycluster'
-department='cft'
+ az account set --subscription $1
+ aks_resource_group=$2
+ aks_name=$3
+ environment=$4
+ department=$5
+
 {
 printf "\n\nTrying cluster $aks_name $aks_resource_group\n"
 az aks get-credentials \

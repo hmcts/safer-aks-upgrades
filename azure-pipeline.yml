@@ -1,6 +1,17 @@
+---
+name: safer-aks-upgrades
 trigger:
-  - main
+  branches:
+    include:
+      - main
 
+resources:
+  repositories:
+    - repository: cnp-azuredevops-libraries
+      type: github
+      ref: refs/heads/master
+      name: hmcts/cnp-azuredevops-libraries
+      endpoint: 'hmcts (1)'
 
 parameters:
   - name: kvConnectedServiceName
@@ -8,58 +19,60 @@ parameters:
   - name: environment_components
     type: object
     default:
-      - service_connection: aks-test
+      - deployment:
+        environment: sbox
+        component: run pluto commands on sbox
+        service_connection: dcd-cftapps-sbox
         department: cft
         aks:
-          subscription: Pay-As-You-Go
-          resource_group: rg-mycluster
-          name: mycluster
+          subscription: DCD-CFTAPPS-SBOX
+          resource_group: cft-sbox-00-rg
+          name: cft-sbox-00-aks
 
-pool:
-  vmImage: 'ubuntu-latest'
+variables:
+  - name: timeoutInMinutes
+    value: 60
+  - name: agentPool
+    value: ubuntu-latest
+  - template: vars/input-variables.yaml@cnp-azuredevops-libraries
 
-resources:
-  repositories: #check out those repositories that you want to scan with Pluto
-    - repository: MyGitHubRepo
-      type: github
-      endpoint: taherkhan30
-      name: taherkhan30/deprecation-test
-      ref: master
+stages:
+  - ${{ each deployment in parameters.environment_components }}:
+      - stage: ${{ deployment.deployment }}
+        dependsOn: ${{ deployment.dependsOn }}
+        jobs:
+          - job: ${{ deployment.environment }}_generate_yaml
+            displayName: ${{ deployment.environment }} - generate yaml
+            pool:
+              vmImage: ${{ variables.agentPool }}
+            timeoutInMinutes: ${{ variables.timeoutInMinutes }}
+            steps:
+              - checkout: self
+                persistCredentials: true
+                clean: true
 
-steps:
-  - checkout: self
-    submodules: true
-    persistCredentials: true
+              - task: CmdLine@2
+                displayName: 'Install Pluto'
+                inputs:
+                  script: |
+                    sudo apt-get update
+                    echo Downloading Pluto...
+                    wget github.com/FairwindsOps/pluto/releases/download/v5.10.1/pluto_5.10.1_linux_amd64.tar.gz
+                    tar xzvf pluto_5.10.1_linux_amd64.tar.gz
+                    echo Pluto downloaded successfully!      
 
-  - checkout: MyGitHubRepo
-    submodules: true
-    persistCredentials: true
+              - task: AzureKeyVault@1
+                displayName: 'Get GitHub API token from Keyvault'
+                inputs:
+                  runAsPreJob: false
+                  ConnectedServiceName: ${{ parameters.kvConnectedServiceName }}
+                  keyVaultName: 'infra-vault-nonprod'
+                  secretsFilter: 'github-api-token'
 
-  - pwsh: |
-      Get-ChildItem $(System.DefaultWorkingDirectory) -Recurse
-    name: DebugCheckout
-    displayName: Debug script checkout
-
-  - task: CmdLine@2
-    displayName: 'Install Pluto' # update Pluto version if needed in wget and tar command
-    inputs:
-      script: |
-        sudo apt-get update
-        echo Downloading Pluto...
-        wget github.com/FairwindsOps/pluto/releases/download/v5.10.1/pluto_5.10.1_linux_amd64.tar.gz
-        tar xzvf pluto_5.10.1_linux_amd64.tar.gz
-        echo Pluto downloaded successfully!      
-
-  # - task: Bash@3
-  #   displayName: 'Run Kubernetes API deprecations validation with Pluto'
-  #   inputs:
-  #     filePath:  '$(System.DefaultWorkingDirectory)/api-deprecation/scan-api-depracations.sh'
-  #     arguments: '$(System.DefaultWorkingDirectory)' # This argument lets the script know the location for checked out repos
-
-  - task: AzureCLI@2
-    displayName: 'run pluto commands on AKS Cluster'
-    inputs:
-      azureSubscription: 'aks-test'
-      scriptType: 'bash'
-      scriptPath: '$(System.DefaultWorkingDirectory)/api-deprecation/aks.sh'
-      # arguments: '${{ parameters.environment_components.aks.subscription }} ${{ parameters.environment_components.aks.resource_group }} ${{ parameters.environment_components.aks.name }} ${{ parameters.environment_components.department }}'
+              - task: AzureCLI@2
+                displayName: ${{ deployment.environment }} - run pluto commands
+                inputs:
+                  azureSubscription: ${{ deployment.service_connection }}
+                  scriptType: 'bash'
+                  scriptPath: 'scripts/run_pluto.sh'
+                  arguments: '${{ deployment.aks.subscription }} ${{ deployment.aks.resource_group }} ${{ deployment.aks.name }} ${{ deployment.environment }} ${{ deployment.department }}'

@@ -99,9 +99,8 @@ stages:
 
               - task: GitHubComment@0
                 inputs:
-                  gitHubConnection: 'GitHub Management - Full Repo Access
+                  gitHubConnection: 'GitHub Management - Full Repo Access'
                   repositoryName: 'safer-aks-upgrades'
                   id: '$(System.PullRequest.PullRequestNumber)'
                   comment: |
-                    The following table shows the results of the pluto command 
-                    <samp>$(myComment)</samp>
+                    The following table shows the results of the pluto command

@@ -13,10 +13,8 @@ printf "\n\nTrying cluster $aks_name $aks_resource_group\n"
 az aks get-credentials \
     --resource-group $aks_resource_group \
     --name $aks_name --admin
-./pluto
-./pluto detect-helm -o wide
-output="test"
-
+output=`./pluto`
+echo "output"
 export output
 
 

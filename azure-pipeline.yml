@@ -99,6 +99,6 @@ stages:
 #
               - task: GitHubComment@0
                 inputs:
-                  gitHubConnection: 'hmcts (1)'
+                  gitHubConnection: 'GitHub Management'
                   repositoryName: 'safer-aks-upgrades'
                   comment: 'test'

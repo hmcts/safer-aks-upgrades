@@ -93,7 +93,7 @@ stages:
 #                displayName: Debug script checkout
 #
               - bash: |
-                  source '$(System.DefaultWorkingDirectory)/run_pluto.sh'
+                  source '$(System.DefaultWorkingDirectory)/scripts/run_pluto.sh'
                   formatted_output=${output//\\n/%0D%0A}
                   echo "##vso[task.setvariable variable=myComment]$formatted_output"
 

@@ -97,8 +97,8 @@ stages:
 #                  formatted_output=${output//\\n/%0D%0A}
 #                  echo "##vso[task.setvariable variable=myComment]$formatted_output"
 #
-#              - task: GitHubComment@0
-#                inputs:
-#                  gitHubConnection: 'hmcts (1)'
-#                  repositoryName: 'safer-aks-upgrades'
-#                  comment: '$(testvar)'
+              - task: GitHubComment@0
+                inputs:
+                  gitHubConnection: 'hmcts (1)'
+                  repositoryName: 'safer-aks-upgrades'
+                  comment: 'test'

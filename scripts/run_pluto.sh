@@ -14,5 +14,5 @@ az aks get-credentials \
     --resource-group $aks_resource_group \
     --name $aks_name --admin
 ./pluto
-./pluto detect-helm -o wide | tee /outputfile.txt
+./pluto detect-helm -o wide
 }

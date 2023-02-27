@@ -77,11 +77,16 @@ stages:
                   scriptPath: 'scripts/run_pluto.sh'
                   arguments: '${{ deployment.aks.subscription }} ${{ deployment.aks.resource_group }} ${{ deployment.aks.name }} ${{ deployment.environment }} ${{ deployment.department }}'
 
-              - powershell: |
-                  $plutoOutput = Get-Content "$(System.DefaultWorkingDirectory)/outputfile.txt"
-                  Write-Host "##vso[task.setvariable variable=testvar;]$plutoOutput"
-                  name: plutoOutput
-                  displayName: Read pluto outputs
+              - pwsh: |
+                  Get-ChildItem $(System.DefaultWorkingDirectory) -Recurse
+                name: DebugCheckout
+                displayName: Debug script checkout
+
+#              - powershell: |
+#                  $plutoOutput = Get-Content "$(System.DefaultWorkingDirectory)/outputfile.txt"
+#                  Write-Host "##vso[task.setvariable variable=testvar;]$plutoOutput"
+#                  name: plutoOutput
+#                  displayName: Read pluto outputs
 
               - task: GitHubComment@0
                 inputs:

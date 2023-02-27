@@ -87,18 +87,18 @@ stages:
                   scriptPath: 'scripts/run_pluto.sh'
                   arguments: '${{ deployment.aks.subscription }} ${{ deployment.aks.resource_group }} ${{ deployment.aks.name }} ${{ deployment.environment }} ${{ deployment.department }}'
 
-#              - pwsh: |
-#                  Get-ChildItem $(System.DefaultWorkingDirectory) -Recurse
-#                name: DebugCheckout
-#                displayName: Debug script checkout
+              - pwsh: |
+                  Get-ChildItem $(System.DefaultWorkingDirectory) -Recurse
+                name: DebugCheckout
+                displayName: Debug script checkout
 #
-#              - bash: |
-#                  source scripts/my-script
-#                  formatted_output=${output//\\n/%0D%0A}
-#                  echo "##vso[task.setvariable variable=myComment]$formatted_output"
-#
+              - bash: |
+                  source scripts/run_pluto.sh
+                  formatted_output=${output//\\n/%0D%0A}
+                  echo "##vso[task.setvariable variable=myComment]$formatted_output"
+
               - task: GitHubComment@0
                 inputs:
                   gitHubConnection: 'GitHub Management'
                   repositoryName: 'safer-aks-upgrades'
-                  comment: 'test'
+                  comment: 'myComment'
